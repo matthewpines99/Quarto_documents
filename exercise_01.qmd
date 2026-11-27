@@ -1,0 +1,124 @@
+---
+title: "Exercise 1: creating a document"
+author: "Matteo Pini"
+date: "`r Sys.Date()`"
+format:
+    html:
+      toc: true
+      toc-title: Contents
+      toc-location: left
+      number-sections: true
+      embed-resources: true
+execute:
+  cache: true
+  output: true
+  results: hide
+  echo: false
+bibliography: "ahmedhelal3.bib"
+csl: "apa.csl"
+editor: visual
+---
+
+# Loading the dataset "Sara_dataset" into R
+
+```{r}
+#| echo: true
+#| results: hide
+
+rm(list=ls())
+library(tidyverse)
+library(see)
+
+```
+
+```{r}
+#| echo: true
+
+library(readxl)
+Sara_data<-read_excel("Sara_dataset.xls",col_names = TRUE)
+
+```
+
+# Describing variables
+
+```{r}
+#| echo: true
+
+glimpse(Sara_data)
+
+
+```
+
+:::::: columns
+:::: {.column width="30%"}
+::: {style="background-color:lightgray; color:darkslategray"}
+*gender*<br>*major*<br>*cond*<br>*phobia*<br>*prevmath*<br>*mathquiz*<br>*statquiz*<br>*hr* [*base*]{style="color:blue;"}*, hr* [*pre*]{style="color:green;"}*, hr* [*post*]{style="color:red;"}<br>*anx [base]{style="color:blue;"}, anx* [*pre*]{style="color:green;"}*, anx [post]{style="color:red;"}*
+:::
+::::
+
+::: {.column width="70%"}
+Participants’ gender<br>Type of undergraduate degree obtained<br>Experimental condition<br>Self-reported fear of mathematics<br>Number of mathematics courses previously attended<br>Score on a mathematics pre-test<br>Score on a statistics test<br>Heart rate under [normal conditions]{style="color:blue;"}, [before]{style="color:green;"} and [after]{style="color:red;"} the test<br>Anxiety test scores under [normal conditions]{style="color:blue;"}, [before]{style="color:green;"} and [after]{style="color:red;"} the test
+:::
+::::::
+
+```{r}
+#| echo: true
+
+summary(Sara_data)
+
+```
+
+# Analising two variables
+
+We can try taking a look at a possible association between the type of degree obtained and the self-reported fear of mathematics using a boxplot:
+
+```{r}
+#| fig-align: "center"
+
+Sara_data$major<-as.factor(Sara_data$major)
+
+Sara_data |>
+  mutate(major=case_when(major=="1"~"psychology",major=="2"~"medicine",major=="3"~"biology",major=="4"~"sociology",major=="5"~"economics")) |>
+  ggplot(aes(x=phobia,y=major,fill = major)) + geom_boxplot(aes(group = major))
+
+```
+
+There's an interesting cross-cultural study [@hamza2013maths] focusing also to different educational systems.
+
+## "R" we stupid?
+Taking a look at the previous graph we could speculate and ask ourselves if mathematics fear in psychology students could imply worse results in the math pre-test and the statistics test, just like the child below.
+
+::: {#fig-nineplusten}
+
+[![](nineplusten.png){fig-align="center" width=50% height=50%}](https://www.youtube.com/watch?v=gIqc4MQNDKA)
+
+:::
+
+We'll analyse a possible association between the type of degree obtained and the scores in both the pre-test and the test using two half violin plots:
+
+```{r}
+#| warning: false
+#| fig-align: "center"
+
+Sara_data |>
+  mutate(major=case_when(major=="1"~"psychology",major=="2"~"medicine",major=="3"~"biology",major=="4"~"sociology",major=="5"~"economics")) |>
+  ggplot(aes(x=mathquiz, y=major, fill = major)) + geom_violinhalf(aes(group = major))
+
+```
+
+```{r}
+#| fig-align: "center"
+
+Sara_data |>
+  mutate(major=case_when(major=="1"~"psychology",major=="2"~"medicine",major=="3"~"biology",major=="4"~"sociology",major=="5"~"economics")) |>
+  ggplot(aes(x=statquiz ,y=major, fill = major)) + geom_violinhalf(aes(group = major))
+  
+```
+
+
+
+
+
+# Conclusions
+
+In this exercise, I've loaded a dataset in R, briefly described its variables, analysed possible associations between variables and learned that we, as psychology students, can be generally scared of math while still being smart and cool when we're talking about statistics (all of this thanks to prof. Altoè and the entire team of Psicostat).
